@@ -267,7 +267,9 @@ class ViLiCBNode(bpy.types.Node, ViNodes):
 
     def init(self, context):
         self.outputs.new('ViLiWResOut', 'Data out')
-
+        self.outputs['Data out'].hide = True
+        self.outputs.new('ViLiC', 'Context out')
+        self.outputs['Context out'].hide = True
         self.inputs.new('ViLiG', 'Geometry in')
 
     def update(self):
@@ -315,12 +317,9 @@ class ViLiCNode(bpy.types.Node, ViNodes):
 
     animtype = [('Static', "Static", "Simple static analysis")]
     animmenu = bpy.props.EnumProperty(name="", description="Animation type", items=animtype, default = 'Static', update = nodeexported)
-
     analysismenu = bpy.props.EnumProperty(name="", description="Type of analysis", items = analysistype, default = '0', update = nodeexported)
     bambuildmenu = bpy.props.EnumProperty(name="", description="Type of building", items=bambuildtype, default = '0', update = nodeexported)
-
-    cusacc = bpy.props.StringProperty(
-            name="", description="Custom Radiance simulation parameters", default="", update = nodeexported)
+    cusacc = bpy.props.StringProperty(name="", description="Custom Radiance simulation parameters", default="", update = nodeexported)
 
     def init(self, context):
         self.inputs.new('ViLiG', 'Geometry in')
@@ -617,34 +616,34 @@ class ViEnRFNode(bpy.types.Node, ViNodes):
         row.operator("node.fileprocess", text = 'Process file').nodename = self.name
 
 
-class ViEnRNode(bpy.types.Node, ViNodes):
-    '''Node for EnergyPlus 2D results analysis'''
-    bl_idname = 'ViEnRNode'
-    bl_label = 'VI EnergyPLus results'
-
-    ctypes = [("0", "Line", "Line Chart"), ("1", "Bar", "Bar Chart")]
-    dsh = bpy.props.IntProperty(name = "Start", description = "", min = 1, max = 24, default = 1)
-    deh = bpy.props.IntProperty(name = "End", description = "", min = 1, max = 24, default = 24)
-    charttype = bpy.props.EnumProperty(items = ctypes, name = "Chart Type", default = "0")
-    timemenu = bpy.props.EnumProperty(items=[("0", "Hourly", "Hourly results"),("1", "Daily", "Daily results"), ("2", "Monthly", "Monthly results")],
-                                                      name="", description="Results frequency", default="0")
-
-
-    class ViEnRXIn(bpy.types.NodeSocket):
-        '''Energy geometry out socket'''
-        bl_idname = 'ViEnRXIn'
-        bl_label = 'X-axis'
-
-        def draw_color(self, context, node):
-            return (0.0, 1.0, 0.0, 0.75)
-        def draw(self, context, layout, node, text):
-            row = layout.row()
-
-    def init(self, context):
-
-        self.inputs.new("ViEnRXIn", "X-axis")
-        self['Start'] = 1
-        self['End'] = 365
+#class ViEnRNode(bpy.types.Node, ViNodes):
+#    '''Node for EnergyPlus 2D results analysis'''
+#    bl_idname = 'ViEnRNode'
+#    bl_label = 'VI EnergyPLus results'
+#
+#    ctypes = [("0", "Line", "Line Chart"), ("1", "Bar", "Bar Chart")]
+#    dsh = bpy.props.IntProperty(name = "Start", description = "", min = 1, max = 24, default = 1)
+#    deh = bpy.props.IntProperty(name = "End", description = "", min = 1, max = 24, default = 24)
+#    charttype = bpy.props.EnumProperty(items = ctypes, name = "Chart Type", default = "0")
+#    timemenu = bpy.props.EnumProperty(items=[("0", "Hourly", "Hourly results"),("1", "Daily", "Daily results"), ("2", "Monthly", "Monthly results")],
+#                                                      name="", description="Results frequency", default="0")
+#
+#
+#    class ViEnRXIn(bpy.types.NodeSocket):
+#        '''Energy geometry out socket'''
+#        bl_idname = 'ViEnRXIn'
+#        bl_label = 'X-axis'
+#
+#        def draw_color(self, context, node):
+#            return (0.0, 1.0, 0.0, 0.75)
+#        def draw(self, context, layout, node, text):
+#            row = layout.row()
+#
+#    def init(self, context):
+#
+#        self.inputs.new("ViEnRXIn", "X-axis")
+#        self['Start'] = 1
+#        self['End'] = 365
 
 
 class ViEnRNode(bpy.types.Node, ViNodes):

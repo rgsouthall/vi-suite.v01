@@ -297,8 +297,8 @@ def sunexport(scene, node, geonode, starttime, frame):
 
 def hdrexport(scene, frame, node, geonode):
     subprocess.call("oconv {} > {}-{}sky.oct".format(retsky(frame, node, geonode), geonode.filebase, frame), shell=True)
-    subprocess.call("rpict -vta -vp 0 0 0 -vd 1 0 0 -vu 0 0 1 -vh 360 -vv 360 -x 1000 -y 1000 {0}-{1}sky.oct > ".format(geonode.filebase, frame) + os.path.join(geonode.newdir, str(frame)+".hdr"), shell=True)
-    subprocess.call('cnt 250 500 | rcalc -f "'+os.path.join(scene.vipath, 'lib', 'latlong.cal"')+' -e "XD=500;YD=250;inXD=0.002;inYD=0.004" | rtrace -af pan.af -n {0} -x 500 -y 250 -fac "{1}-{2}sky.oct" > '.format(geonode.nproc, geonode.filebase, frame) + '"'+os.path.join(geonode.newdir, str(frame)+'p.hdr')+'"', shell=True)
+    subprocess.call("rpict -vta -vp 0 0 0 -vd 0 1 0 -vu 0 0 1 -vh 360 -vv 360 -x 1500 -y 1500 {0}-{1}sky.oct > ".format(geonode.filebase, frame) + os.path.join(geonode.newdir, str(frame)+".hdr"), shell=True)
+    subprocess.call('cnt 750 1500 | rcalc -f "'+os.path.join(scene.vipath, 'lib', 'latlong.cal"')+' -e "XD=1500;YD=750;inXD=0.000666;inYD=0.001333" | rtrace -af pan.af -n {0} -x 1500 -y 750 -fac "{1}-{2}sky.oct" > '.format(geonode.nproc, geonode.filebase, frame) + '"'+os.path.join(geonode.newdir, str(frame)+'p.hdr')+'"', shell=True)
     if '{}p.hdr'.format(frame) not in bpy.data.images:
         bpy.data.images.load(os.path.join(geonode.newdir, str(frame)+"p.hdr"))
     else:
@@ -323,8 +323,9 @@ def blsunexport(scene, node, starttime, frame, sun):
         sun.location = [x*20 for x in (sin(solazi*deg2rad), -cos(solazi*deg2rad), tan(solalt*deg2rad))]
         sun.rotation_euler = (90-solalt)*deg2rad, 0, solazi*deg2rad
         if scene.render.engine == 'CYCLES':
-            bpy.data.worlds['World'].node_tree.nodes['Sky Texture'].sun_direction = sin((solazi)*deg2rad), -cos((solazi)*deg2rad), solalt/90
-            bpy.data.worlds['World'].node_tree.nodes['Sky Texture'].keyframe_insert(data_path = 'sun_direction', frame = frame)
+            if 'Sky Texture' in [node.bl_label for node in bpy.data.worlds['World'].node_tree.nodes]:
+                bpy.data.worlds['World'].node_tree.nodes['Sky Texture'].sun_direction = sin((solazi)*deg2rad), -cos((solazi)*deg2rad), solalt/90
+                bpy.data.worlds['World'].node_tree.nodes['Sky Texture'].keyframe_insert(data_path = 'sun_direction', frame = frame)
         sun.keyframe_insert(data_path = 'location', frame = frame)
         sun.keyframe_insert(data_path = 'rotation_euler', frame = frame)
         sun.data.cycles.use_multiple_importance_sampling = True
